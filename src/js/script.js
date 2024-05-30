@@ -10,16 +10,37 @@ const filters = [];
 // Pusta tablica favoriteBooks
 const favoriteBooks = [];
 
+function determineRatingBgc(rating) {
+  if (rating < 6) {
+    return 'linear-gradient(to bottom, #fefcea 0%, #f1da36 100%)';
+  } else if (rating > 6 && rating <= 8) {
+    return 'linear-gradient(to bottom, #b4df5b 0%, #b4df5b 100%)';
+  } else if (rating > 8 && rating <= 9) {
+    return 'linear-gradient(to bottom, #299a0b 0%, #299a0b 100%)';
+  } else if (rating > 9) {
+    return 'linear-gradient(to bottom, #ff0084 0%, #ff0084 100%)';
+  }
+}
+
 function render() {
+  booksList.innerHTML = '';
   const compiledTemplate = Handlebars.compile(bookTemplate);
 
   for (const book of dataSource.books) {
-    const generatedHTML = compiledTemplate(book);
+    const ratingBgc = determineRatingBgc(book.rating);
+    const ratingWidth = book.rating * 10;
+
+    const generatedHTML = compiledTemplate({
+      ...book,
+      ratingBgc: ratingBgc,
+      ratingWidth: ratingWidth,
+    });
 
     const bookElement = utils.createDOMFromHTML(generatedHTML);
 
     booksList.appendChild(bookElement);
   }
+  filterBooks();
 }
 
 // Funkcja filterBooks
@@ -64,7 +85,7 @@ function initActions() {
       }
 
       // Ponowne renderowanie książek na podstawie zmienionych filtrów
-      filterBooks();
+      render();
     }
   });
 
